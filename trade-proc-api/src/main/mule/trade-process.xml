@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="ece0bd98-2129-46ac-9596-fadc460c1c00" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="61587f59-b5b9-4062-80dc-5f246350cf64" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration2" doc:name="HTTP Request configuration" doc:id="4b005f88-9693-41d1-ac23-cfe88854058e" basePath="/truist-trade-file" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<sub-flow name="trade-proce-fx" doc:id="af5e7a2b-869a-4716-93b5-43a763c7d7f0" >
+		<logger level="INFO" doc:name="Start fx log" doc:id="0eb8c11b-ae5d-4b99-9e57-d06654ed6117" message="Start fx log"/>
+		<http:request method="GET" doc:name="ods-fx" doc:id="df274cfa-acf1-4ee8-a942-d8c1f0822bd1" config-ref="HTTP_Request_configuration" path="/api/trade/fx" responseTimeout="#[20000]">
+			<http:headers ><![CDATA[#[output application/jSON
+---
+{
+	"consumerId" : attributes.headers.consumerId
+	
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/json
+---
+{
+	"operation" : attributes.queryParams.operation,
+	"limit" : attributes.queryParams.limit,
+	"exchangeRate" : attributes.queryParams.exchangeRate,
+	"symbol" : attributes.queryParams.symbol
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="End fx log" doc:id="c5028ba3-fc52-4aa0-9124-a3c41629254c" message="End fx log"/>
+	</sub-flow>
+	<sub-flow name="trade-proce-equity" doc:id="dc535854-4b23-454f-b27e-9f005ad06a50" >
+		<logger level="INFO" doc:name="Start equity logger" doc:id="c5ebdd2f-0f72-41bd-85ec-30fb27ff3b74" message="Start equity logger"/>
+		<http:request method="GET" doc:name="ods-equity" doc:id="af51fc07-0a1c-4824-af12-b322254a58d3" config-ref="HTTP_Request_configuration1" path="/api/trade/equity">
+			<http:headers ><![CDATA[#[output application/json
+---
+{
+	"consumerId" : attributes.headers.consumerId
+	
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/json
+---
+{
+	"operation" : attributes.queryParams.operation,
+	"limit" : attributes.queryParams.limit,
+	"exchangeRate" : attributes.queryParams.exchangeRate,
+	"symbol" : attributes.queryParams.symbol
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="End equity logger" doc:id="b1284236-6273-43db-8cd6-e17ef75380ec" message="End equity logger"/>
+	</sub-flow>
+	<sub-flow name="trade-proce-file" doc:id="e883ef1d-1117-4ed3-89e9-a33ac641299f" >
+		<logger level="INFO" doc:name="Start trade logger" doc:id="aaa0b6fa-8bda-4ef4-9ec2-cb9ca2901466" message="Start trade logger"/>
+		<http:request method="POST" doc:name="tread-file" doc:id="2f5d17a0-97e5-48bb-940b-7577bccddfcd" config-ref="HTTP_Request_configuration2" path="/api/v1/trade" responseTimeout="#[200000]">
+			<http:headers ><![CDATA[#[output application/json
+---
+{
+	"consumerId" : attributes.headers.consumerId
+}]]]></http:headers>
+		</http:request>
+		<logger level="INFO" doc:name="End trade logger" doc:id="151c8e6e-9252-4a19-8ed8-dc450e93bdc5" message="Start trade logger"/>
+	</sub-flow>
+</mule>
