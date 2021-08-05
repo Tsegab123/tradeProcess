@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="ece0bd98-2129-46ac-9596-fadc460c1c00" >
 		<http:request-connection host="localhost" port="8081" />
 	</http:request-config>
@@ -51,7 +52,17 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	"symbol" : attributes.queryParams.symbol
 }]]]></http:query-params>
 		</http:request>
-		<logger level="INFO" doc:name="End equity logger" doc:id="b1284236-6273-43db-8cd6-e17ef75380ec" message="End equity logger"/>
+		<ee:transform doc:name="Transform Message" doc:id="b17803fc-c7f8-4df6-aeed-31a272a9936d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "sucess respose"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End equity logger" doc:id="b1284236-6273-43db-8cd6-e17ef75380ec" message="End equity logger "/>
 	</sub-flow>
 	<sub-flow name="trade-proce-file" doc:id="e883ef1d-1117-4ed3-89e9-a33ac641299f" >
 		<logger level="INFO" doc:name="Start trade logger" doc:id="aaa0b6fa-8bda-4ef4-9ec2-cb9ca2901466" message="Start trade logger"/>
